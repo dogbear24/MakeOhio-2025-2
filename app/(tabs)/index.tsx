@@ -217,7 +217,7 @@ export default function HomeScreen() {
 
       {/*Add Camera Section*/}
 
-      <ThemedText style={styles.rowContainer}>
+      <ThemedView style={styles.rowContainer}>
         <ThemedView style={styles.cameraColumn}>
 
           <ThemedView style={styles.cameraContainer}>
@@ -225,12 +225,12 @@ export default function HomeScreen() {
             <WebCamera onPhotoTaken={handlePhotoTaken} />
           </ThemedView>
         </ThemedView>
-      </ThemedText>
+      </ThemedView>
 
 
       {/* Chat Bubble */}
     <ThemedView style={styles.bubbleContainer}>
-      <ThemedText type="subtitle" style={{ marginBottom: 10 }}>
+      <ThemedText type="subtitle" style={styles.stepContainer}>
         Chat
       </ThemedText>
       <ChatComponent />
