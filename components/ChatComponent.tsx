@@ -56,7 +56,7 @@ export function ChatComponent() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.bubbleContainer}>
       <Text style={styles.header}>Ask for Help</Text>
       <TextInput
         style={styles.input}
@@ -82,4 +82,15 @@ const styles = StyleSheet.create({
   input: { borderWidth: 1, padding: 5, marginBottom: 10, color: 'white' },
   messagesContainer: { marginTop: 20, color: 'white' },
   messageText: { marginVertical: 2, color: 'white' },
+  bubbleContainer: {
+    borderRadius: 20,
+    padding: 15,
+    marginVertical: 10,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
 });

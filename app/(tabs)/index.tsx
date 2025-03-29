@@ -193,62 +193,67 @@ export default function HomeScreen() {
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome! Hello My name is Jason</ThemedText>
+        <ThemedText type="title">Welcome! Access our resources below!</ThemedText>
         <HelloWave />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
+        <ThemedText type="subtitle">Step 1: Take a Picture of your surrounding</ThemedText>
         <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
+          Our tool will analyze your location and do its best to provide you with relevant resources.
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
+        <ThemedText type="subtitle">Step 2: Ask for help</ThemedText>
         <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
+          Feel free to provide any inquiry through the text box below or an audio message.
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
+        <ThemedText type="subtitle">Step 3: Peace of Mind</ThemedText>
         <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
+          Know where your traveling through our innovative solution
         </ThemedText>
       </ThemedView>
 
       {/*Add Camera Section*/}
-      <ThemedView style={styles.cameraContainer}>
-        <ThemedText type="subtitle">Camera Preview</ThemedText>
-        <WebCamera onPhotoTaken={handlePhotoTaken} />
-      </ThemedView>
-      <ChatComponent></ChatComponent>
-      
 
-      <ThemedView style={styles.cameraContainer}>
-        <ThemedText type="subtitle">Audio Recording</ThemedText>
-        <Button 
-          title={isRecording ? 'Stop Recording' : 'Start Recording'} 
-          onPress={isRecording ? stopRecording : startRecording}
-          disabled={isRecording}
-        />
-        {isRecording && (
-          <ThemedText style={{ color: 'red', marginTop: 8 }}>
-            Recording... (auto-stops in 10 seconds)
-          </ThemedText>
-        )}
+      <ThemedText style={styles.rowContainer}>
+        <ThemedView style={styles.cameraColumn}>
+
+          <ThemedView style={styles.cameraContainer}>
+            <ThemedText type="subtitle">Camera Preview</ThemedText>
+            <WebCamera onPhotoTaken={handlePhotoTaken} />
+          </ThemedView>
+        </ThemedView>
+      </ThemedText>
+
+
+      {/* Chat Bubble */}
+    <ThemedView style={styles.bubbleContainer}>
+      <ThemedText type="subtitle" style={{ marginBottom: 10 }}>
+        Chat
+      </ThemedText>
+      <ChatComponent />
+    </ThemedView>
+
+      
+    <ThemedView style={styles.controlsColumn}>
+      <ThemedView style={styles.bubbleContainer}>
+        <ThemedView style={styles.bubbleContainer}>
+          <ThemedText type="subtitle">Audio Recording</ThemedText>
+          <Button 
+            title={isRecording ? 'Stop Recording' : 'Start Recording'} 
+            onPress={isRecording ? stopRecording : startRecording}
+            disabled={isRecording}
+          />
+          {isRecording && (
+            <ThemedText style={{ color: 'red', marginTop: 8 }}>
+              Recording... (auto-stops in 10 seconds)
+            </ThemedText>
+          )}
+        </ThemedView>
       </ThemedView>
+    </ThemedView>
 
 
   
@@ -263,10 +268,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    marginBottom: 20,
   },
   stepContainer: {
     gap: 8,
-    marginBottom: 8,
+    marginBottom: 20,
+    padding: 15,
+    borderRadius: 15,
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   reactLogo: {
     height: 178,
@@ -276,7 +285,41 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   cameraContainer: {
-    height: 1000,
-    marginBottom: 8,
+    marginBottom: 20,
+    borderRadius: 20,
+    padding: 15,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    height: 500,
+    width: 500,
+  },
+  bubbleContainer: {
+    borderRadius: 20,
+    padding: 15,
+    marginVertical: 10,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    gap: 20,
+    marginBottom: 20,
+  },
+  cameraColumn: {
+    flex: 2,
+  },
+  controlsColumn: {
+    flex: 1,
+    justifyContent: 'space-between',
   },
 });
+
+
