@@ -1,7 +1,7 @@
 import { Image, StyleSheet, Platform } from 'react-native';
+import { useEffect, useState } from 'react';
 import { useRef } from 'react';
 import { Camera } from 'expo-camera';
-import WebSocketComponent, { WebSocketComponentRef } from '@/components/WebSocket';
 
 import WebCamera from '@/components/WebCamera';
 import { HelloWave } from '@/components/HelloWave';
@@ -9,16 +9,54 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { View, Button } from 'react-native';
+import {ChatComponent} from '@/components/ChatComponent';
 
 
 export default function HomeScreen() {
 
-  const wsRef = useRef<WebSocketComponentRef>(null);
 
-  const handleSendMessage = () => {
-    // Call the exposed sendMessage method from the WebSocket component
-    wsRef.current?.sendMessage('Hello from the main app!');
-  };
+  const [ws, setWs] = useState<WebSocket | null>(null);
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => { 
+    // Connect to the WebSocket server
+    const socket = new WebSocket('ws://localhost:8765');
+    
+    socket.onopen = () => {
+      console.log('Connected to WebSocket');
+      // You can send a text message once the connection is open.
+      const message = {
+        type: 'text',
+        data: 'Hello from React Native!'
+      };
+      socket.send(JSON.stringify(message));
+    };
+
+    socket.onmessage = (e) => {
+      // Message received from the server.
+      console.log('Received:', e.data);
+      const msgObj = JSON.parse(e.data);
+      //setMessages(prev => [...prev, msgObj]);
+    };
+
+    socket.onerror = (e) => {
+      console.log('WebSocket error:', e);
+    };
+
+    socket.onclose = (e) => {
+      console.log('WebSocket closed:', e.code, e.reason);
+    };
+
+    setWs(socket);
+
+    // Cleanup on component unmount
+    return () => {
+      if (socket) {
+        socket.close();
+      }
+    };
+  }, []);
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -69,11 +107,8 @@ export default function HomeScreen() {
         <ThemedText type="subtitle">Camera Preview</ThemedText>
         <WebCamera />
       </ThemedView>
-      
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <WebSocketComponent ref={wsRef} />
-        <Button title="Send Message from Main" onPress={handleSendMessage} />
-      </View>
+      <ChatComponent></ChatComponent>
+  
 
 
     </ParallaxScrollView>
