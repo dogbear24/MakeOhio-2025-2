@@ -57,7 +57,7 @@ export function ChatComponent() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>WebSocket Chat</Text>
+      <Text style={styles.header}>Ask for Help</Text>
       <TextInput
         style={styles.input}
         placeholder="Type your message..."
@@ -78,8 +78,8 @@ export function ChatComponent() {
 
 const styles = StyleSheet.create({
   container: { padding: 20, marginTop: 50 },
-  header: { fontSize: 20, marginBottom: 10 },
-  input: { borderWidth: 1, padding: 5, marginBottom: 10 },
-  messagesContainer: { marginTop: 20 },
-  messageText: { marginVertical: 2 },
+  header: { fontSize: 20, marginBottom: 10, color: 'white' },
+  input: { borderWidth: 1, padding: 5, marginBottom: 10, color: 'white' },
+  messagesContainer: { marginTop: 20, color: 'white' },
+  messageText: { marginVertical: 2, color: 'white' },
 });
