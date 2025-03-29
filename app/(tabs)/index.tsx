@@ -23,6 +23,8 @@ export default function HomeScreen() {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [messages, setMessages] = useState([]);
 
+  const [responseMessage, setResponseMessage] = useState<string>('');
+
   const { location, error: locationError, getLocation } = useLocation();
 
 
@@ -163,6 +165,10 @@ export default function HomeScreen() {
       console.log('Received:', e.data);
       const msgObj = JSON.parse(e.data);
       //setMessages(prev => [...prev, msgObj]);
+
+      setResponseMessage(msgObj.data);
+
+
     };
 
     socket.onerror = (e) => {
@@ -205,13 +211,13 @@ export default function HomeScreen() {
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 2: Ask for help</ThemedText>
         <ThemedText>
-          Feel free to provide any inquiry through the text box below or an audio message.
+          Feel free to provide any inquiries through the text box below.
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 3: Peace of Mind</ThemedText>
         <ThemedText>
-          Know where your traveling through our innovative solution
+          Know where you're traveling with our innovative solution
         </ThemedText>
       </ThemedView>
 
@@ -234,9 +240,14 @@ export default function HomeScreen() {
         Chat
       </ThemedText>
       <ChatComponent />
+      <ThemedView style={styles.bubbleContainer}>
+      <ThemedText type="subtitle">Response:</ThemedText>
+        <ThemedText type="default">{responseMessage}</ThemedText>
+      </ThemedView>
+      
     </ThemedView>
 
-      
+{/*       
     <ThemedView style={styles.controlsColumn}>
       <ThemedView style={styles.bubbleContainer}>
         <ThemedView style={styles.bubbleContainer}>
@@ -253,7 +264,7 @@ export default function HomeScreen() {
           )}
         </ThemedView>
       </ThemedView>
-    </ThemedView>
+    </ThemedView> */}
 
 
   

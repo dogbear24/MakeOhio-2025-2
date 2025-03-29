@@ -83,7 +83,10 @@ export default function WebCamera({ onPhotoTaken }: WebCameraProps) {
       >
         
         <TouchableOpacity style={styles.buttonContainer} onPress={takePicture}>
-          <Text style={styles.text}>Capture</Text>
+          <View style={styles.bubbleContainer}>
+            <Text style={styles.text}>Capture</Text>
+          </View>
+          
         </TouchableOpacity>
       </CameraView>
     </View>
@@ -105,5 +108,16 @@ const styles = StyleSheet.create({
   },
   text: {
     color: 'white',
+  },
+  bubbleContainer: {
+    borderRadius: 20,
+    padding: 15,
+    marginVertical: 10,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
 });
