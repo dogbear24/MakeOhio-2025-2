@@ -2,8 +2,13 @@ import { Image, StyleSheet, Platform } from 'react-native';
 import { useEffect, useState } from 'react';
 import { useRef } from 'react';
 import { Camera } from 'expo-camera';
+import { Audio } from 'expo-av';
+import { Recording } from 'expo-av/build/Audio';
+import * as FileSystem from 'expo-file-system';
 
-import WebCamera from '@/components/WebCamera';
+
+import WebCamera, { PhotoLocation } from '@/components/WebCamera';
+import { LocationDisplay, useLocation } from '@/components/LocationComponent';
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
@@ -17,6 +22,127 @@ export default function HomeScreen() {
 
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [messages, setMessages] = useState([]);
+
+  const { location, error: locationError, getLocation } = useLocation();
+
+
+  const [isRecording, setIsRecording] = useState(false);
+  const recordingRef = useRef<Recording | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [recording, setRecording] = useState<Recording | null>(null);
+
+  const sendRecording = async (uri: string) => {
+    try {
+      const fileInfo = await FileSystem.getInfoAsync(uri);
+      if (fileInfo.exists) {
+        const fileContent = await FileSystem.readAsStringAsync(uri, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+        
+        // // Send via WebSocket
+        // wsRef.current?.sendMessage({
+        //   type: 'audio',
+        //   data: fileContent,
+        //   format: 'base64'
+        // });
+      }
+    } catch (error) {
+      console.log('File read error:', error);
+    }
+  };
+
+  const handlePhotoTaken = (photoUri: string, location: PhotoLocation) => {
+    if (ws) {
+      ws.send(JSON.stringify({
+        type: 'photo',
+        data: {
+          image: photoUri,
+          location: location
+        }
+      }));
+    }
+  };
+
+  const startRecording = async () => {
+    try {
+
+      await Audio.requestPermissionsAsync();
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+  
+      const { recording: newRecording } = await Audio.Recording.createAsync(
+        Audio.RecordingOptionsPresets.HIGH_QUALITY
+      );
+  
+      // Store recording in both ref and state
+      recordingRef.current = newRecording;
+      setIsRecording(true);
+  
+      // Set auto-stop timer
+      timeoutRef.current = setTimeout(async () => {
+        try {
+          if (recordingRef.current) {
+            await recordingRef.current.stopAndUnloadAsync();
+            const uri = recordingRef.current.getURI();
+            console.log('Auto-stopped recording at:', uri);
+          }
+        } catch (error) {
+          console.log('Auto-stop error:', error);
+        } finally {
+          // Reset state regardless of success
+          recordingRef.current = null;
+          setIsRecording(false);
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+          }
+        }
+      }, 10000);
+  
+    } catch (err) {
+      console.error('Failed to start recording', err);
+      setIsRecording(false);
+    }
+  };
+
+  const stopRecording = async () => {
+    try {
+      if (recordingRef.current) {
+        await recordingRef.current.stopAndUnloadAsync();
+        const uri = recordingRef.current.getURI();
+        console.log('Manually stopped recording at:', uri);
+      }
+    } catch (err) {
+      console.error('Failed to stop recording', err);
+    } finally {
+      // Clear references and state
+      recordingRef.current = null;
+      setIsRecording(false);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      // Clear any pending timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      
+      // Stop recording only if it exists and hasn't been stopped
+      if (recording) {
+        console.log('Cleaning up recording...');
+        recording.stopAndUnloadAsync().catch(error => {
+          console.log('Cleanup error:', error);
+        });
+      }
+    };
+  }, [recording]);
+
+
 
   useEffect(() => { 
     // Connect to the WebSocket server
@@ -105,9 +231,26 @@ export default function HomeScreen() {
       {/*Add Camera Section*/}
       <ThemedView style={styles.cameraContainer}>
         <ThemedText type="subtitle">Camera Preview</ThemedText>
-        <WebCamera />
+        <WebCamera onPhotoTaken={handlePhotoTaken} />
       </ThemedView>
       <ChatComponent></ChatComponent>
+      
+
+      <ThemedView style={styles.cameraContainer}>
+        <ThemedText type="subtitle">Audio Recording</ThemedText>
+        <Button 
+          title={isRecording ? 'Stop Recording' : 'Start Recording'} 
+          onPress={isRecording ? stopRecording : startRecording}
+          disabled={isRecording}
+        />
+        {isRecording && (
+          <ThemedText style={{ color: 'red', marginTop: 8 }}>
+            Recording... (auto-stops in 10 seconds)
+          </ThemedText>
+        )}
+      </ThemedView>
+
+
   
 
 

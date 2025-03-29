@@ -5,11 +5,25 @@ import { useRef } from 'react';
 import { View, Text, StyleSheet, Platform, TouchableOpacity, Image } from 'react-native';
 import * as MediaLibrary from 'expo-media-library';
 
+import { getCurrentLocation } from './LocationComponent';
+
+export type PhotoLocation = {
+  latitude: number;
+  longitude: number;
+  accuracy?: number;
+  timestamp?: number;
+} | null;
+
+interface WebCameraProps {
+  onPhotoTaken: (photo: string, location: PhotoLocation) => void;
+}
+
+
 
 // Define CameraType manually if needed
 type CameraType = 'front' | 'back';
 
-export default function WebCamera() {
+export default function WebCamera({ onPhotoTaken }: WebCameraProps) {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [cameraType, setCameraType] = useState<CameraType>('front');
   const [photo, setPhoto] = useState<string | null>(null);
@@ -21,9 +35,22 @@ export default function WebCamera() {
         quality: 0.8,
         base64: true,
       });
+
+      const location = await getCurrentLocation();
+
       if (capturedPhoto != null) {
         console.log(capturedPhoto.uri);
         setPhoto(capturedPhoto.uri);
+        onPhotoTaken(capturedPhoto.uri, location ? {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          accuracy: location.coords.accuracy ?? undefined, // Convert null to undefined
+          timestamp: location.timestamp
+        } : null);
+        if (location) {
+          console.log("Laditude:", location.coords.latitude, "Longitude", location.coords.longitude);
+        }
+        
       } else {
         console.log('No photo captured');
       }
